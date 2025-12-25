@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Merry Christmas 🎄</title>
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: gabriola, sans-serif;
+  color: white;
+  text-align: center;
+  background: black;
+  position: relative;
+}
+
+/* Background Layers */
+.bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  z-index: 1;
+}
+#bgGift { background-image: url("gift.jpg"); }
+#bgChoco { background-image: url("chocolate.jpg"); }
+.bg.active { opacity: 1; }
+
+/* Overlay */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 2;
+}
+
+/* Main content */
+#content {
+  position: relative;
+  z-index: 5;
+  margin-top: 30vh;
+}
+p {
+  font-size: 1.5em;
+  text-shadow: 2px 2px 6px black;
+  white-space: pre-line;
+  margin: 20px;
+}
+button {
+  margin-top: 25px;
+  padding: 15px 25px;
+  font-size: 1.1em;
+  background: crimson;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 1.2s ease;
+}
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+button.pulse { animation: pulse 3s infinite; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px gold; transform: scale(1); }
+  50% { box-shadow: 0 0 20px gold; transform: scale(1.05); }
+  100% { box-shadow: 0 0 5px gold; transform: scale(1); }
+}
+
+/* Particles */
+.particle { position: fixed; z-index: 6; pointer-events: none; }
+.snow { font-size: 12px; animation: fall linear infinite; color: white; }
+@keyframes fall { to { transform: translateY(110vh); } }
+.rain { width: 2px; height: 15px; background: lightblue; animation: fall linear infinite; }
+.heart { font-size: 18px; color: pink; animation: fall linear infinite; }
+.balloon { width: 20px; height: 30px; border-radius: 50%; position: fixed; animation: rise linear infinite; }
+@keyframes rise { to { transform: translateY(-120vh); } }
+
+/* Stars */
+.star {
+  width: 3px;
+  height: 3px;
+  background: gold;
+  border-radius: 50%;
+  position: fixed;
+  animation: explode 0.8s forwards;
+}
+@keyframes explode {
+  to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+}
+
+/* Fireworks text */
+.firework-text {
+  width: 5px;
+  height: 5px;
+  background: gold;
+  position: absolute;
+  border-radius: 50%;
+}
+</style>
+</head>
+<body>
+
+<div id="bgGift" class="bg active"></div>
+<div id="bgChoco" class="bg"></div>
+<div id="overlay"></div>
+
+<div id="content">
+  <p id="msg">Tap the gift 🎁</p>
+  <button id="giftButton" onclick="startMagic()">Open Gift 🎅</button>
+</div>
+
+<audio id="music" loop>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const herName = "Belinda Chebet";
+const giftButton = document.getElementById("giftButton");
+const music = document.getElementById("music");
+const msg = document.getElementById("msg");
+const bgGift = document.getElementById("bgGift");
+const bgChoco = document.getElementById("bgChoco");
+
+function createSnow(c=40){
+  for(let i=0;i<c;i++){
+    let s=document.createElement("div");
+    s.className="particle snow";
+    s.innerText="❄";
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=(10+Math.random()*15)+"px";
+    s.style.animationDuration=(5+Math.random()*5)+"s";
+    document.body.appendChild(s);
+  }
+}
+function createRain(c=30){
+  for(let i=0;i<c;i++){
+    let r=document.createElement("div");
+    r.className="particle rain";
+    r.style.left=Math.random()*100+"vw";
+    r.style.animationDuration=(1+Math.random())+"s";
+    document.body.appendChild(r);
+  }
+}
+function createHearts(c=15){
+  for(let i=0;i<c;i++){
+    let h=document.createElement("div");
+    h.className="particle heart";
+    h.innerText="💗";
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=(8+Math.random()*5)+"s";
+    document.body.appendChild(h);
+  }
+}
+function createBalloons(c=10){
+  for(let i=0;i<c;i++){
+    let b=document.createElement("div");
+    b.className="particle balloon";
+    b.style.left=Math.random()*100+"vw";
+    b.style.backgroundColor=`hsl(${Math.random()*360},70%,60%)`;
+    b.style.animationDuration=(6+Math.random()*4)+"s";
+    document.body.appendChild(b);
+  }
+}
+
+function createStars(c=25){
+  for(let i=0;i<c;i++){
+    let s=document.createElement("div");
+    s.className="star";
+    s.style.setProperty("--x",(Math.random()*200-100)+"px");
+    s.style.setProperty("--y",(Math.random()*200-100)+"px");
+    s.style.left="50%";
+    s.style.top="50%";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),800);
+  }
+}
+
+function fireworksText(text){
+  const y=88;
+  [...text].forEach((c,i)=>{
+    if(c===" ") return;
+    for(let j=0;j<6;j++){
+      let f=document.createElement("div");
+      f.className="firework-text";
+      f.style.left=(15+i*2)+"vw";
+      f.style.top=(y-Math.random()*8)+"vh";
+      document.body.appendChild(f);
+      setTimeout(()=>f.remove(),3000);
+    }
+  });
+}
+
+function startMagic(){
+  music.currentTime=0;
+  music.volume=0.8;
+  music.play().catch(()=>{document.addEventListener("touchstart",()=>music.play(),{once:true});});
+
+  giftButton.disabled=true;
+  bgGift.classList.remove("active");
+  bgChoco.classList.add("active");
+
+  createSnow(); createRain(); createHearts(); createBalloons();
+  msg.innerText="";
+
+  setTimeout(()=>msg.innerText=`A heartfelt Christmas gift from your sis,\nPrince de Lee 🎁`,1800);
+  setTimeout(()=>msg.innerText+=`\n\nMerry Christmas ${herName} 🎄`,3500);
+  setTimeout(()=>msg.innerText+=`\nI hope today treats you kindly and makes you smile.`,5200);
+  setTimeout(()=>msg.innerText+=`\nI could’ve sent a text…`,6800);
+  setTimeout(()=>msg.innerText+=`\nbut I chose to be extra 😌`,8300);
+  setTimeout(()=>{
+    msg.innerText+=`\n\nSis for life 💛`;
+    giftButton.disabled=false;
+    giftButton.innerText="Play Again 🎶";
+    giftButton.classList.add("pulse");
+    fireworksText("SIS FOR LIFE BELINDA");
+    createStars();
+  },10000);
+}
+
+createSnow();
+</script>
+</body>
+</html>
